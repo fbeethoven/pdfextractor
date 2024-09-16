@@ -17,7 +17,7 @@ def translate(line: str) -> Page:
     response = requests.get(f"{TRANSLATE_URL}{request}")
 
     if response.status_code != 200:
-        logger.error("got an issue translating line")
+        logger.error("could not translate line")
 
     response_json = response.json()
 
@@ -35,8 +35,13 @@ def translate(line: str) -> Page:
 
 
 def get_pdf_pages(file_path: str) -> list[PageObject]:
-    reader = PdfReader(file_path)
-    return reader.pages
+    lines: list[PageObject] = []
+    try:
+        reader = PdfReader(file_path)
+        lines = reader.pages
+    except Exception as e:
+        logger.error(f"could not read pdf {e}")
+    return lines
 
 
 def read_pdf(file_path: str) -> list[Page]:
@@ -45,20 +50,27 @@ def read_pdf(file_path: str) -> list[Page]:
     total_pages = len(pdf_pages)
 
     for i, page in enumerate(pdf_pages):
-        logger.info(f"  page {i}/{total_pages}")
+        logger.debug(f"  page {i}/{total_pages}")
         lines = page.extract_text().split("\n")
-        lines_filtered = [line for line in lines if not line.isspace()]
-        pages.append(translate("\n".join(lines_filtered)))
+        lines_filtered = "\n".join([line for line in lines if not line.isspace()])
+        if len("\n".join(lines_filtered)) == 0:
+            continue
+        pages.append(translate(lines_filtered))
 
     return pages
 
 
 def generate_summary() -> Summary:
     documents: Summary = {}
+
     all_pdfs = [file for file in os.listdir() if file.endswith(".pdf")]
     for document in all_pdfs:
         logger.info(f"processing document: '{document}'...")
-        documents[document] = read_pdf(document)
+        document_text = read_pdf(document)
+
+        if len(document_text) == 0:
+            continue
+        documents[document] = document_text
 
     return documents
 

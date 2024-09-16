@@ -1,6 +1,3 @@
-import json
-from datetime import datetime
-
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.lib.pagesizes import letter
