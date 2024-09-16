@@ -1,16 +1,18 @@
 import os
-import json
 import urllib.parse
 import requests
-from datetime import datetime
 
 from pypdf import PdfReader, PageObject
 from loguru import logger
 
-from .config import REFERENCE_DIR, TRANSLATE_URL, DATA_DIR
+from .config import TRANSLATE_URL
 
 
-def translate(line: str) -> list[dict[str,str]]:
+Page = list[dict[str, str]]
+Summary = dict[str, list[Page]]
+
+
+def translate(line: str) -> Page:
     request = urllib.parse.quote_plus(line)
     response = requests.get(f"{TRANSLATE_URL}{request}")
 
@@ -37,7 +39,7 @@ def get_pdf_pages(file_path: str) -> list[PageObject]:
     return reader.pages
 
 
-def read_pdf(file_path: str) -> list[list[dict[str,str]]]:
+def read_pdf(file_path: str) -> list[Page]:
     pages: list[list[dict[str,str]]] = []
     pdf_pages = get_pdf_pages(file_path)
     total_pages = len(pdf_pages)
@@ -51,15 +53,12 @@ def read_pdf(file_path: str) -> list[list[dict[str,str]]]:
     return pages
 
 
-def main():
-    documents: dict[str, list[list[dict[str,str]]]] = {}
-    logger.info(REFERENCE_DIR)
-    for document in os.listdir(REFERENCE_DIR):
+def generate_summary() -> Summary:
+    documents: Summary = {}
+    all_pdfs = [file for file in os.listdir() if file.endswith(".pdf")]
+    for document in all_pdfs:
         logger.info(f"processing document: '{document}'...")
-        documents[document] = read_pdf(f"{REFERENCE_DIR}/{document}")
+        documents[document] = read_pdf(document)
 
-    save_file_path = f"{DATA_DIR}/{datetime.now().isoformat()}.json" 
-    logger.info(f"saving results to {save_file_path}...")
-    with open(save_file_path, "w", encoding="utf8") as f:
-        json.dump(documents, f, indent=4, ensure_ascii=False)
+    return documents
 
