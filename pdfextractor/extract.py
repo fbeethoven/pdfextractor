@@ -4,7 +4,7 @@ import urllib.parse
 import requests
 from datetime import datetime
 
-from PyPDF2 import PdfReader
+from pypdf import PdfReader, PageObject
 from loguru import logger
 
 from .config import REFERENCE_DIR, TRANSLATE_URL, DATA_DIR
@@ -32,12 +32,17 @@ def translate(line: str) -> list[dict[str,str]]:
     return translation
 
 
+def get_pdf_pages(file_path: str) -> list[PageObject]:
+    reader = PdfReader(file_path)
+    return reader.pages
+
+
 def read_pdf(file_path: str) -> list[list[dict[str,str]]]:
     pages: list[list[dict[str,str]]] = []
-    reader = PdfReader(file_path)
+    pdf_pages = get_pdf_pages(file_path)
+    total_pages = len(pdf_pages)
 
-    total_pages = len(reader.pages)
-    for i, page in enumerate(reader.pages):
+    for i, page in enumerate(pdf_pages):
         logger.info(f"  page {i}/{total_pages}")
         lines = page.extract_text().split("\n")
         lines_filtered = [line for line in lines if not line.isspace()]
