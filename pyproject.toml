@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "pdfextractor"
-version = "0.1.0"
-description = "PDF extractor"
+version = "1.0.0"
+description = "Extract polish text from pdf and produce a line-by-line bilingual summary"
 authors = ["fbeethoven <fulgencio.beethoven@gmail.com>"]
 readme = "README.md"
 include = [{ path = "pdfextractor/fonts/*.ttf" }]
