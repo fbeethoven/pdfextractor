@@ -6,3 +6,8 @@ a summary for every pdf file in current directory.
 
 usage: pdfextractor [-h] [-s [SOURCE]] [-d [DEST]] [files ...]
 
+Quick install:
+```bash
+pip install git+https://github.com/fbeethoven/pdfextractor.git
+```
+
