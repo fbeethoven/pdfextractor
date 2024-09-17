@@ -1,4 +1,3 @@
-import os
 import urllib.parse
 import requests
 
@@ -6,6 +5,7 @@ from pypdf import PdfReader, PageObject
 from loguru import logger
 
 from .config import TRANSLATE_URL
+from .cli import Config
 
 
 Page = list[dict[str, str]]
@@ -60,11 +60,10 @@ def read_pdf(file_path: str) -> list[Page]:
     return pages
 
 
-def generate_summary() -> Summary:
+def generate_summary(config: Config) -> Summary:
     documents: Summary = {}
 
-    all_pdfs = [file for file in os.listdir() if file.endswith(".pdf")]
-    for document in all_pdfs:
+    for document in config.documents:
         logger.info(f"processing document: '{document}'...")
         document_text = read_pdf(document)
 

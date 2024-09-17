@@ -1,3 +1,5 @@
+import os
+
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.lib.pagesizes import letter
@@ -7,17 +9,20 @@ from loguru import logger
 
 from .config import FONT_DIR
 from .extract import generate_summary, Page, Summary
+from .cli import Config, cli_args_parse
 
 
 def main():
-    summary: Summary = generate_summary() 
+    config: Config = cli_args_parse()
+    summary: Summary = generate_summary(config) 
 
     if len(summary) == 0:
         logger.info("There are no pdf files to generate")
 
     for file_name, pages in summary.items():
         logger.info(f"generating summary for file: {file_name}")
-        create_pdf("summary_" + file_name, pages)
+        file_path = os.path.join(config.dest, "summary_" + file_name)
+        create_pdf(file_path, pages)
 
 
 def draw_column(c: Canvas, width: int, writer: PDFTextObject, line: str):
