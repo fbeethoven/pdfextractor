@@ -4,6 +4,7 @@ version = "0.1.0"
 description = "PDF extractor"
 authors = ["fbeethoven <fulgencio.beethoven@gmail.com>"]
 readme = "README.md"
+include = [{ path = "pdfextractor/fonts/*.ttf" }]
 
 [tool.poetry.dependencies]
 python = "^3.10"

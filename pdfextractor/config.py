@@ -5,10 +5,9 @@ import sys
 from loguru import logger
 
 
-PROJ_ROOT = Path(__file__).resolve().parents[1]
+PROJ_ROOT = Path(__file__).resolve().parents[0]
 
-DATA_DIR: str = os.path.join(PROJ_ROOT, "data")
-FONT_DIR: str = os.path.join(DATA_DIR, "fonts")
+FONT_DIR: str = os.path.join(PROJ_ROOT, "fonts")
 
 TRANSLATE_URL_BASE: str = "https://translate.googleapis.com/translate_a/single"
 TRANSLATE_URL: str = f"{TRANSLATE_URL_BASE}?client=gtx&sl=pl&tl=en&dt=t&q="
